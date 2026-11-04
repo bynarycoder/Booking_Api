@@ -3,13 +3,17 @@
 A small appointment-booking API for a clinic, built to the contract published at
 <https://koyaacademy.com/assessment-api>, plus a one-page web UI that uses it.
 
-* **Live API:** _(see the deployment section / link in the submission message)_
-* **Web page:** the same URL — `GET /` serves the booking UI.
-* **Interactive docs:** `/docs`
+* **Live API:** <https://clinic-booking-api-jajg.onrender.com>
+* **Web page:** <https://clinic-booking-api-jajg.onrender.com> — `GET /` serves the booking UI.
+* **Interactive docs:** <https://clinic-booking-api-jajg.onrender.com/docs>
 * **API key:** `clinic-demo-key-2026` (send it as the `X-API-Key` header; override with the `API_KEY` env var).
 
-Stack: Python 3.12 · FastAPI · SQLite (default) or PostgreSQL (`DATABASE_URL`).
+Stack: Python 3.12 · FastAPI · PostgreSQL on Render (SQLite locally).
 No ORM — the guarantees below come from the database itself.
+
+> Render's free instances sleep after 15 minutes idle, so the first request after a
+> quiet spell can take ~30-50s to wake. `.github/workflows/keep-warm.yml` pings
+> `/health` every 10 minutes to avoid that; delete the file to disable it.
 
 ## Endpoints
 
@@ -106,9 +110,15 @@ concurrent duplicate `Idempotency-Key` retries, cursor pagination walk, and the
 
 ## Deploy it
 
+Currently deployed on Render (free plan, Frankfurt) as web service
+`clinic-booking-api` backed by a free Render Postgres (`clinic-db`), which is
+where bookings are stored — they survive redeploys and restarts.
+
 The app is a single stateless web service; it only needs a database URL and an
-API key. `render.yaml` describes a free Render web service plus a free Render
-Postgres, and `DATABASE_URL` switches the storage layer to Postgres automatically.
+API key. `render.yaml` describes the same setup as a blueprint (free Render web
+service plus free Render Postgres), and `DATABASE_URL` switches the storage layer
+to Postgres automatically. `deploy_render.py` at the workspace root reproduces the
+whole deployment through the Render API.
 
 Any host works — the start command is always:
 
