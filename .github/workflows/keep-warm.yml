@@ -1,0 +1,32 @@
+# Render's free instances sleep after 15 minutes of inactivity, and a sleeping
+# service takes ~30-50s to answer its first request. This pings /health so the
+# API the assessment checks call is always awake.
+#
+# TO INSTALL: in github.com/bynarycoder/Booking_Api create the file
+#   .github/workflows/keep-warm.yml
+# and paste this content in (the API token used to push this repo is scoped
+# without `workflow`, so it had to be added by hand).
+#
+# Note: an always-on free instance uses ~730 of the workspace's 750 free
+# instance-hours/month. Delete the workflow if you need that budget elsewhere.
+name: keep-warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the API
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 \
+              https://clinic-booking-api-jajg.onrender.com/health)
+            echo "attempt $i -> HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done
+          exit 1
