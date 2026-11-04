@@ -12,8 +12,9 @@ Stack: Python 3.12 · FastAPI · PostgreSQL on Render (SQLite locally).
 No ORM — the guarantees below come from the database itself.
 
 > Render's free instances sleep after 15 minutes idle, so the first request after a
-> quiet spell can take ~30-50s to wake. `.github/workflows/keep-warm.yml` pings
-> `/health` every 10 minutes to avoid that; delete the file to disable it.
+> quiet spell can take ~30-50s to wake. `keep-warm.yml` (supplied alongside this
+> repo) is a GitHub Actions cron that pings `/health` every 10 minutes to keep it
+> awake — drop it in at `.github/workflows/keep-warm.yml` to enable it.
 
 ## Endpoints
 
