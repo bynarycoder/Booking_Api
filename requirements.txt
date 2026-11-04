@@ -1,0 +1,5 @@
+# Pinned to the versions this API was tested against.
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+# Only needed when DATABASE_URL points at PostgreSQL (e.g. Neon / Render).
+psycopg[binary]==3.2.3

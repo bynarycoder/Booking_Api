@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Northside Clinic — Book an appointment</title>
+<style>
+  :root{
+    --ink:#10231f; --muted:#5b6f6a; --line:#dce7e4; --bg:#f4f8f7;
+    --card:#ffffff; --teal:#0d7d6b; --teal-dark:#0a5f52; --teal-soft:#e6f4f1;
+    --amber:#b26a00; --red:#b3261e; --red-soft:#fdeceb;
+    --shadow:0 1px 2px rgba(16,35,31,.06), 0 12px 32px rgba(16,35,31,.07);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 500px at 80% -10%, #dff0eb 0%, rgba(223,240,235,0) 60%),
+      var(--bg);
+    color:var(--ink);
+    font:16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:1020px;margin:0 auto;padding:28px 20px 80px}
+
+  /* ---------- header ---------- */
+  header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+  .logo{
+    width:46px;height:46px;border-radius:13px;background:var(--teal);
+    display:grid;place-items:center;box-shadow:0 6px 16px rgba(13,125,107,.28);flex:0 0 auto;
+  }
+  .brand h1{font-size:20px;margin:0;letter-spacing:-.02em}
+  .brand p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+  .keybox{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);
+    border:1px solid var(--line);padding:7px 10px;border-radius:11px;box-shadow:var(--shadow)}
+  .keybox label{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+  .keybox input{border:0;outline:0;font:13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+    width:150px;color:var(--ink);background:transparent}
+  .dot{width:8px;height:8px;border-radius:50%;background:#c9d6d3;flex:0 0 auto}
+  .dot.ok{background:#17a67a;box-shadow:0 0 0 3px rgba(23,166,122,.16)}
+  .dot.bad{background:var(--red);box-shadow:0 0 0 3px rgba(179,38,30,.14)}
+
+  /* ---------- hero ---------- */
+  .hero{background:linear-gradient(135deg,#0d7d6b,#0b6a8d);color:#fff;border-radius:20px;
+    padding:26px 28px;margin-bottom:22px;box-shadow:0 18px 40px rgba(13,125,107,.22)}
+  .hero h2{margin:0 0 6px;font-size:24px;letter-spacing:-.02em}
+  .hero p{margin:0;opacity:.88;font-size:14.5px;max-width:56ch}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid;grid-template-columns:1.35fr .85fr;gap:20px;align-items:start}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden}
+  .card-h{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line);
+    background:#fbfdfc}
+  .card-h h3{margin:0;font-size:14.5px;letter-spacing:-.01em}
+  .card-h .count{font-size:12px;color:var(--muted);background:var(--teal-soft);
+    padding:2px 8px;border-radius:99px;font-weight:600}
+  .card-b{padding:16px 18px}
+
+  /* ---------- filters ---------- */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .chip{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:99px;
+    padding:6px 13px;font-size:13px;cursor:pointer;transition:.15s;font-weight:500}
+  .chip:hover{border-color:#b9d4ce;color:var(--ink)}
+  .chip.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 3px 10px rgba(13,125,107,.25)}
+
+  /* ---------- slot list ---------- */
+  .day{margin-bottom:6px}
+  .day-h{position:sticky;top:0;background:#fbfdfc;padding:9px 18px;font-size:12px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  .slot{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid #eef4f2}
+  .slot:last-child{border-bottom:0}
+  .slot:hover{background:#fafdfc}
+  .time{font-variant-numeric:tabular-nums;font-weight:650;font-size:15px;min-width:104px;letter-spacing:-.01em}
+  .time small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;letter-spacing:.02em}
+  .who{font-size:13.5px;color:var(--muted);flex:1}
+  .btn{border:0;border-radius:10px;padding:8px 15px;font-size:13.5px;font-weight:600;cursor:pointer;
+    background:var(--teal);color:#fff;transition:.15s;font-family:inherit}
+  .btn:hover{background:var(--teal-dark)}
+  .btn:disabled{background:#e8efed;color:#93a5a1;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--teal);border:1px solid #cfe3de}
+  .btn.ghost:hover{background:var(--teal-soft)}
+  .btn.danger{background:#fff;border:1px solid #f3cfcc;color:var(--red)}
+  .btn.danger:hover{background:var(--red-soft)}
+  .btn.sm{padding:6px 12px;font-size:12.5px}
+  .badge{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:3px 9px;border-radius:99px}
+  .badge.free{background:var(--teal-soft);color:var(--teal-dark)}
+  .badge.taken{background:#f1f3f2;color:#8b9a96}
+  .badge.cancelled{background:#f1f3f2;color:#8b9a96}
+  .badge.confirmed{background:var(--teal-soft);color:var(--teal-dark)}
+
+  /* ---------- forms ---------- */
+  label.f{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 5px;letter-spacing:.01em}
+  input.f{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;
+    font-size:14px;background:#fff;outline:none;transition:.15s;color:var(--ink)}
+  input.f:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,125,107,.12)}
+  .field{margin-bottom:13px}
+  .row{display:flex;gap:10px;align-items:center}
+
+  /* ---------- confirmation ---------- */
+  .confirm{background:linear-gradient(160deg,#eaf7f3,#ffffff);border:1px solid #cfe8e1;border-radius:var(--radius);
+    padding:22px;text-align:center;box-shadow:var(--shadow)}
+  .tick{width:52px;height:52px;border-radius:50%;background:var(--teal);display:grid;place-items:center;
+    margin:0 auto 12px;box-shadow:0 8px 20px rgba(13,125,107,.3);animation:pop .35s ease-out}
+  @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+  .confirm h3{margin:0 0 4px;font-size:18px;letter-spacing:-.02em}
+  .confirm p{margin:0 0 16px;color:var(--muted);font-size:13.5px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;text-align:left;font-size:13.5px;
+    background:#fff;border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:14px}
+  .kv dt{color:var(--muted)}
+  .kv dd{margin:0;font-weight:600;text-align:right;word-break:break-all;font-variant-numeric:tabular-nums}
+
+  /* ---------- my bookings ---------- */
+  .bk{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .bk:last-child{border-bottom:0}
+  .bk .m{flex:1;min-width:0}
+  .bk .m b{display:block;font-size:13.5px;font-weight:650}
+  .bk .m span{color:var(--muted);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* ---------- misc ---------- */
+  .empty{text-align:center;color:var(--muted);padding:34px 18px;font-size:13.5px}
+  .empty svg{opacity:.5;margin-bottom:8px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);background:#10231f;color:#fff;
+    padding:11px 18px;border-radius:11px;font-size:13.5px;box-shadow:0 14px 34px rgba(0,0,0,.25);
+    transition:transform .28s cubic-bezier(.2,.9,.3,1.2);z-index:99;max-width:90vw}
+  .toast.show{transform:translate(-50%,0)}
+  .toast.error{background:var(--red)}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .skel{height:14px;border-radius:6px;background:linear-gradient(90deg,#eef4f2,#f7fbfa,#eef4f2);
+    background-size:200% 100%;animation:sh 1.2s infinite}
+  @keyframes sh{to{background-position:-200% 0}}
+  code{font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;background:#eef4f2;padding:2px 6px;border-radius:5px}
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12.5px}
+  footer a{color:var(--teal);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v10M7 12h10"/></svg>
+    </div>
+    <div class="brand">
+      <h1>Northside Clinic</h1>
+      <p>Appointment booking</p>
+    </div>
+    <div class="keybox" title="Every API request needs this header">
+      <span class="dot" id="keyDot"></span>
+      <label for="apiKey">X-API-Key</label>
+      <input id="apiKey" spellcheck="false" autocomplete="off" />
+    </div>
+  </header>
+
+  <section class="hero">
+    <h2>Find a time that works</h2>
+    <p>Pick an open slot below and confirm your details. Each slot can only be booked once — your confirmation appears straight away.</p>
+  </section>
+
+  <div class="grid">
+    <!-- ---------------- left: slots ---------------- -->
+    <div>
+      <div class="card">
+        <div class="card-h">
+          <h3>Available appointments</h3>
+          <span class="count" id="slotCount">—</span>
+        </div>
+        <div class="chips" id="providerChips"></div>
+        <div id="slotList"><div class="empty">Loading slots…</div></div>
+      </div>
+    </div>
+
+    <!-- ---------------- right: booking / confirmation ---------------- -->
+    <div>
+      <div class="card" id="panelCard">
+        <div class="card-h"><h3 id="panelTitle">Your booking</h3></div>
+        <div class="card-b" id="panelBody">
+          <div class="empty">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+            <div>Choose a slot to book it.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-h"><h3>My bookings</h3></div>
+        <div class="card-b">
+          <div class="field">
+            <label class="f" for="lookupEmail">Email</label>
+            <div class="row">
+              <input class="f" id="lookupEmail" type="email" placeholder="you@example.com" />
+              <button class="btn ghost sm" id="lookupBtn" style="flex:0 0 auto">Find</button>
+            </div>
+          </div>
+          <div id="myBookings"><div class="hint">Enter the email you booked with to see your appointments.</div></div>
+          <div style="text-align:center">
+            <button class="btn ghost sm" id="moreBtn" style="display:none;margin-top:10px">Load more</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Built for the Koya Cohort 4 assessment · <a href="/docs" target="_blank" rel="noreferrer">API docs</a>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const DEFAULT_KEY = "clinic-demo-key-2026";
+  const $ = (id) => document.getElementById(id);
+  const state = { slots: [], provider: null, page: null, myEmail: "", selected: null };
+
+  // ---------------------------------------------------------------- helpers
+  const keyInput = $("apiKey");
+  keyInput.value = localStorage.getItem("koya_api_key") || DEFAULT_KEY;
+  keyInput.addEventListener("change", () => {
+    localStorage.setItem("koya_api_key", keyInput.value.trim());
+    refresh();
+  });
+
+  let toastTimer;
+  function toast(msg, isError) {
+    const el = $("toast");
+    el.textContent = msg;
+    el.className = "toast show" + (isError ? " error" : "");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (el.className = "toast"), 4200);
+  }
+
+  function setKeyDot(ok) {
+    $("keyDot").className = "dot " + (ok ? "ok" : "bad");
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  async function api(path, options = {}) {
+    const res = await fetch(path, {
+      ...options,
+      headers: {
+        "X-API-Key": keyInput.value.trim(),
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {}),
+      },
+    });
+    let data = null;
+    try { data = await res.json(); } catch { /* empty body */ }
+    setKeyDot(res.status !== 401);
+    if (!res.ok) {
+      const err = new Error((data && data.error) || `Request failed (${res.status})`);
+      err.status = res.status;
+      err.retryAfter = res.headers.get("Retry-After");
+      throw err;
+    }
+    return data;
+  }
+
+  function when(iso) {
+    const d = new Date(iso);
+    return {
+      day: d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" }),
+      time: d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }),
+      end: new Date(new Date(iso).getTime() + 0) && d,
+    };
+  }
+
+  function timeRange(startIso, endIso) {
+    const fmt = (v) => new Date(v).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    return fmt(startIso) + " – " + fmt(endIso);
+  }
+
+  function dayLabel(iso) {
+    return new Date(iso).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+  }
+
+  // ---------------------------------------------------------------- slots
+  async function loadSlots() {
+    $("slotList").innerHTML = `<div style="padding:18px"><div class="skel" style="width:60%"></div></div>`;
+    try {
+      const qs = state.provider ? "?provider=" + encodeURIComponent(state.provider) : "";
+      const data = await api("/slots" + qs);
+      state.slots = data.slots || [];
+      renderChips();
+      renderSlots();
+    } catch (e) {
+      $("slotList").innerHTML =
+        `<div class="empty">${e.status === 401 ? "That API key was rejected (401)." : esc(e.message)}</div>`;
+    }
+  }
+
+  function renderChips() {
+    const providers = [...new Set(state.slots.map((s) => s.provider))];
+    const box = $("providerChips");
+    if (!providers.length) { box.style.display = "none"; return; }
+    box.style.display = "flex";
+    box.innerHTML =
+      `<button class="chip${state.provider ? "" : " active"}" data-p="">All providers</button>` +
+      providers.map((p) =>
+        `<button class="chip${state.provider === p ? " active" : ""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+    box.querySelectorAll(".chip").forEach((b) =>
+      b.addEventListener("click", () => { state.provider = b.dataset.p || null; loadSlots(); }));
+  }
+
+  function renderSlots() {
+    const list = $("slotList");
+    const open = state.slots.filter((s) => s.available).length;
+    $("slotCount").textContent = `${open} open of ${state.slots.length}`;
+
+    if (!state.slots.length) {
+      list.innerHTML = `<div class="empty">No slots are published yet.</div>`;
+      return;
+    }
+
+    const byDay = new Map();
+    for (const s of state.slots) {
+      const k = dayLabel(s.start);
+      if (!byDay.has(k)) byDay.set(k, []);
+      byDay.get(k).push(s);
+    }
+
+    let html = "";
+    for (const [day, slots] of byDay) {
+      html += `<div class="day"><div class="day-h">${esc(day)}</div>`;
+      for (const s of slots) {
+        const past = new Date(s.start).getTime() <= Date.now();
+        const badge = s.available
+          ? (past ? `<span class="badge taken">Past</span>` : `<span class="badge free">Open</span>`)
+          : `<span class="badge taken">Booked</span>`;
+        const action = s.available && !past
+          ? `<button class="btn sm" data-book="${esc(s.id)}">Book</button>`
+          : `<button class="btn sm" disabled>${past ? "Passed" : "Booked"}</button>`;
+        html += `
+          <div class="slot">
+            <div class="time">${esc(timeRange(s.start, s.end).split(" – ")[0])}
+              <small>to ${esc(timeRange(s.start, s.end).split(" – ")[1] || "")}</small></div>
+            <div class="who">${esc(s.provider)} &nbsp;·&nbsp; ${badge}</div>
+            ${action}
+          </div>`;
+      }
+      html += `</div>`;
+    }
+    list.innerHTML = html;
+    list.querySelectorAll("[data-book]").forEach((b) =>
+      b.addEventListener("click", () => openBooking(b.dataset.book)));
+  }
+
+  // ---------------------------------------------------------------- booking
+  function openBooking(slotId) {
+    const slot = state.slots.find((s) => s.id === slotId);
+    if (!slot) return;
+    state.selected = slot;
+    $("panelTitle").textContent = "Confirm your appointment";
+    $("panelBody").innerHTML = `
+      <div class="kv" style="margin-bottom:16px">
+        <dt>Provider</dt><dd>${esc(slot.provider)}</dd>
+        <dt>When</dt><dd>${esc(dayLabel(slot.start))}<br>${esc(timeRange(slot.start, slot.end))}</dd>
+      </div>
+      <form id="bookForm">
+        <div class="field">
+          <label class="f" for="bName">Full name</label>
+          <input class="f" id="bName" required placeholder="Ada Obi" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label class="f" for="bEmail">Email</label>
+          <input class="f" id="bEmail" type="email" required placeholder="ada@example.com" autocomplete="email" />
+        </div>
+        <div class="row">
+          <button class="btn" id="bSubmit" type="submit" style="flex:1">Confirm booking</button>
+          <button class="btn ghost" type="button" id="bCancel">Back</button>
+        </div>
+        <div class="hint">Retries are safe: this request carries an <code>Idempotency-Key</code>.</div>
+      </form>`;
+    $("bName").value = localStorage.getItem("koya_name") || "";
+    $("bEmail").value = localStorage.getItem("koya_email") || "";
+    $("bName").focus();
+    $("bCancel").addEventListener("click", idlePanel);
+    $("bookForm").addEventListener("submit", submitBooking);
+  }
+
+  function idlePanel() {
+    state.selected = null;
+    $("panelTitle").textContent = "Your booking";
+    $("panelBody").innerHTML = `
+      <div class="empty">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+        <div>Choose a slot to book it.</div>
+      </div>`;
+  }
+
+  async function submitBooking(ev) {
+    ev.preventDefault();
+    const name = $("bName").value.trim();
+    const email = $("bEmail").value.trim();
+    const btn = $("bSubmit");
+    btn.disabled = true;
+    btn.textContent = "Booking…";
+    localStorage.setItem("koya_name", name);
+    localStorage.setItem("koya_email", email);
+
+    // One key per intentional attempt: a retry of *this* request can never double-book.
+    const idem = (crypto.randomUUID && crypto.randomUUID()) ||
+      "k" + Date.now() + Math.random().toString(16).slice(2);
+
+    try {
+      const booking = await api("/bookings", {
+        method: "POST",
+        headers: { "Idempotency-Key": idem },
+        body: JSON.stringify({ slot_id: state.selected.id, name, email }),
+      });
+      showConfirmation(booking, state.selected);
+      $("lookupEmail").value = email;
+      state.myEmail = email;
+      loadMyBookings(true);
+      loadSlots();
+    } catch (e) {
+      const msg = e.status === 429
+        ? `Too many attempts for ${email}. Try again in ${e.retryAfter || 60}s.`
+        : e.message;
+      toast(msg, true);
+      btn.disabled = false;
+      btn.textContent = "Confirm booking";
+      if (e.status === 409) loadSlots();
+    }
+  }
+
+  function showConfirmation(booking, slot) {
+    $("panelTitle").textContent = "Confirmed";
+    $("panelBody").innerHTML = `
+      <div class="confirm">
+        <div class="tick">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3>You're booked</h3>
+        <p>${esc(dayLabel(slot.start))} · ${esc(timeRange(slot.start, slot.end))}</p>
+        <dl class="kv">
+          <dt>Booking</dt><dd>${esc(booking.id)}</dd>
+          <dt>Provider</dt><dd>${esc(slot.provider)}</dd>
+          <dt>Name</dt><dd>${esc(booking.name)}</dd>
+          <dt>Email</dt><dd>${esc(booking.email)}</dd>
+          <dt>Status</dt><dd><span class="badge confirmed">${esc(booking.status)}</span></dd>
+        </dl>
+        <button class="btn ghost sm" id="cancelBk" data-id="${esc(booking.id)}">Cancel this booking</button>
+        <button class="btn sm" id="newBk" style="margin-left:6px">Book another</button>
+      </div>`;
+    $("newBk").addEventListener("click", idlePanel);
+    $("cancelBk").addEventListener("click", () => cancelBooking(booking.id, (b) => {
+      $("panelTitle").textContent = "Cancelled";
+      $("panelBody").innerHTML = `
+        <div class="empty">
+          <div style="font-size:15px;color:var(--ink);font-weight:650;margin-bottom:6px">Booking cancelled</div>
+          <div>${esc(b.id)} was cancelled and the slot is free again.</div>
+        </div>`;
+    }));
+  }
+
+  async function cancelBooking(id, after) {
+    try {
+      const b = await api("/bookings/" + encodeURIComponent(id), { method: "DELETE" });
+      toast("Booking cancelled — the slot is free again.");
+      if (after) after(b);
+      loadSlots();
+      if (state.myEmail) loadMyBookings(true);
+    } catch (e) {
+      toast(e.message, true);
+    }
+  }
+
+  // ---------------------------------------------------------------- my bookings
+  async function loadMyBookings(reset) {
+    const email = $("lookupEmail").value.trim();
+    if (!email) { toast("Enter an email first.", true); return; }
+    if (reset) state.page = null;
+    const qs = new URLSearchParams({ email, limit: "5" });
+    if (state.page) qs.set("cursor", state.page);
+    try {
+      const data = await api("/bookings?" + qs.toString());
+      const rows = data.bookings || [];
+      if (reset) state.myEmail = email;
+      const box = $("myBookings");
+      if (reset) box.innerHTML = "";
+      if (reset && !rows.length) {
+        box.innerHTML = `<div class="hint">No bookings for that email yet.</div>`;
+      } else {
+        box.insertAdjacentHTML("beforeend", rows.map((b) => {
+          const slot = state.slots.find((s) => s.id === b.slot_id);
+          const when = slot ? `${dayLabel(slot.start)} · ${timeRange(slot.start, slot.end)}` : b.slot_id;
+          const action = b.status === "confirmed"
+            ? `<button class="btn danger sm" data-cancel="${esc(b.id)}">Cancel</button>`
+            : `<span class="badge cancelled">cancelled</span>`;
+          return `<div class="bk">
+            <div class="m"><b>${esc(when)}</b><span>${esc(b.id)} · ${esc(slot ? slot.provider : "")}</span></div>
+            ${action}
+          </div>`;
+        }).join(""));
+        box.querySelectorAll("[data-cancel]").forEach((b) =>
+          b.addEventListener("click", () => cancelBooking(b.dataset.cancel)));
+      }
+      state.page = data.next_cursor;
+      $("moreBtn").style.display = data.next_cursor ? "inline-block" : "none";
+    } catch (e) {
+      toast(e.message, true);
+    }
+  }
+
+  // ---------------------------------------------------------------- boot
+  $("lookupBtn").addEventListener("click", () => loadMyBookings(true));
+  $("lookupEmail").addEventListener("keydown", (e) => { if (e.key === "Enter") loadMyBookings(true); });
+  $("moreBtn").addEventListener("click", () => loadMyBookings(false));
+
+  function refresh() { loadSlots(); }
+  loadSlots();
+})();
+</script>
+</body>
+</html>
